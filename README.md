@@ -3,7 +3,7 @@
 Making a real-time analytics using Kafka stream, Flink streaming on NYC taxi dataset. Estimate the direction that an empty taxi can get a higher chance to have a customer. Reconstruct/Simplied the architecture with previous fellow's taxi-optimizer project, also benchmark and analyze the tradeoff.
 
 ## Tech Stack: 
-Kafka, Flink streaming
+Kafka, Flink Streaming, Airflow
 ## Data Source:
 NYC taxi trip data, including the total amount of money paid and where, when the taxi driver pick up the customer
 ## Engineering Challenge:
