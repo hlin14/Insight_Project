@@ -6,7 +6,7 @@ import pyspark
 import json
 #import helper
 import math
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class BatchTransformer:
     def __init__(self):
@@ -23,7 +23,7 @@ class BatchTransformer:
 	self.data = (self.data
 			.map(lambda x: x.split(','))
 			#add rounded_time col
-			.map(lambda x: [x[0], x[1], x[2], x[3],x[4], datetime.strptime(x[0], "%Y/%m/%d %H:%M")])
+			.map(lambda x: [x[0], x[1], x[2], x[3],x[4], datetime.strptime(x[0], "%Y/%m/%d %H:%M") - timedelta(minutes = datetime.strptime(x[0], "%Y/%m/%d %H:%M").minute % 10)])
 
 			#add rounded_longtitude_col, #add rounded_latitude_col
 			.map(lambda x: [x[0], x[1], x[2], x[3],x[4], x[5], math.floor(float(x[2]) * 10000) / 10000.0, math.floor(float(x[3]) * 10000) / 10000.0])
