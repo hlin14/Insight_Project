@@ -7,7 +7,8 @@ from flask_googlemaps import Map
 
 import os
 def connect_to_db():
-    conn_string = "host='10.0.0.10' dbname='ping_db' user='ping' password='a126583372'"
+    postgres_password = os.environ["POSTGRESPASSWORD"]
+    conn_string = "host='10.0.0.10' dbname='ping_db' user='ping' password=" + postgres_password
 
     conn = psycopg2.connect(conn_string)
 
