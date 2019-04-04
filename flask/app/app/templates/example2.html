@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var map;
+      function initMap() {
+
+        var client_cur = {lat: {{client1.cur_lat}}, lng: {{client1.cur_long}}};
+	var client_rec = {lat: {{client1.rec_lat}}, lng: {{client1.rec_long}}};
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 40.7128, lng: -74.0060},
+          zoom: 13
+        });
+
+	var marker = new google.maps.Marker({position: client_cur, map: map,
+            icon: {
+                url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+            }});
+	var marker = new google.maps.Marker({position: client_rec, map: map, 
+	    icon: {
+      		url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+    	    }});
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{googleapi}}&callback=initMap"
+    async defer></script>
+
+  </body>
+</html>
