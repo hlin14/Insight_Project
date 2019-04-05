@@ -15,13 +15,13 @@ def get_s3_and_produce():
 			print message
 			#need to filter out the col 
 			produce(message)
-			time.sleep(0.01)
+			time.sleep(0.001)
 
 def produce(msg):
 
 	producer = KafkaProducer(bootstrap_servers='localhost:9092', value_serializer=lambda x: dumps(x).encode('utf-8'))
 
-	producer.send('taxi-stream-input', value=msg)
+	producer.send('word-count-input', value=msg)
 	producer.flush()
 
 
