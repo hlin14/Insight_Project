@@ -7,15 +7,15 @@ import time
 def get_s3_and_produce():
 	while True:
 		s3 = boto3.client('s3')
-		obj = s3.get_object(Bucket="han-ping-insight-bucket", Key="nyc_taxi_raw_data/STREAMING_FILE/MTA-Bus-Time-2014-08-01.txt")
+		obj = s3.get_object(Bucket="han-ping-insight-bucket", Key="nyc_taxi_raw_data/STREAMING_FILE/MTA-Bus-Time-2014-08-01.csv")
 		for line in lazyreader.lazyread(obj['Body'], delimiter='\n'):
 			#print line
 			message = line.strip()
-			message = message.split()
-			#print message
+			message = message.split(",")
+			print message
 			#need to filter out the col 
 			produce(message)
-			time.sleep(1)
+			time.sleep(0.01)
 
 def produce(msg):
 
