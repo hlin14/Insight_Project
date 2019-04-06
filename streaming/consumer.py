@@ -7,7 +7,7 @@ import ast
 import uuid
 def start_consumer():
 	#consumer = KafkaConsumer("taxi-stream-output", auto_offset_reset ='earliest')
-	consumer = KafkaConsumer("word-count-output")
+	consumer = KafkaConsumer("word-count-input")
 	_id = 0
 	postgres_password = os.environ["POSTGRESPASSWORD"]
 	conn_string = "host='10.0.0.10' dbname='ping_db' user='ping' password=" + postgres_password

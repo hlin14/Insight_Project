@@ -5,6 +5,7 @@ import lazyreader
 import time
 
 def get_s3_and_produce():
+	producer = KafkaProducer(bootstrap_servers='localhost:9092', value_serializer=lambda x: dumps(x).encode('utf-8'))
 	while True:
 		s3 = boto3.client('s3')
 		obj = s3.get_object(Bucket="han-ping-insight-bucket", Key="nyc_taxi_raw_data/STREAMING_FILE/MTA-Bus-Time-2014-08-01.csv")
@@ -14,12 +15,11 @@ def get_s3_and_produce():
 			message = message.split(",")
 			print message
 			#need to filter out the col 
-			produce(message)
-			time.sleep(0.001)
+			produce(message, producer)
+			time.sleep(0.01)
 
-def produce(msg):
+def produce(msg, producer):
 
-	producer = KafkaProducer(bootstrap_servers='localhost:9092', value_serializer=lambda x: dumps(x).encode('utf-8'))
 
 	producer.send('word-count-input', value=msg)
 	producer.flush()
