@@ -48,7 +48,7 @@ def messageReceived(methods=['GET', 'POST']):
 @socketio.on('my event')
 def handle_my_custom_event(json, methods=['GET', 'POST']):
 	print 'received my event: ' + str(json)
-	print json['message']
+	#print json['message']
 	
 	global cursor
 	cursor.execute("SELECT * FROM bus_testing WHERE bus_id = %s ORDER BY date_time DESC LIMIT 1;",[float(json['message'])])
