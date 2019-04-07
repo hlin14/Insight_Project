@@ -51,13 +51,13 @@
       socket.on( 'my response', function( msg ) {
       console.log(msg.lat)
       console.log(msg.long)
-        if( typeof msg.lat !== 'undefined' ) {
-          $( 'h3' ).remove()
-          $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.long+'</b> '+msg.lat+'</div>' )
+//        if( typeof msg.lat !== 'undefined' ) {
+ //         $( 'h3' ).remove()
+ //         $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.long+'</b> '+msg.lat+'</div>' )
 	  client_cur = {lat: msg.lat, lng: msg.long};
 	  clearMarkers()
           addMarker(client_cur)
-	}
+//	}
       })
     </script>
     <div id="map"></div>
