@@ -49,12 +49,14 @@
         } )
       } )
       socket.on( 'my response', function( msg ) {
-        console.log( msg )
-        if( typeof msg.user_name !== 'undefined' ) {
+        console.log(msg.lat)
+	console.log(msg.long)
+        //if( typeof msg.user_name !== 'undefined' ) {
           $( 'h3' ).remove()
           $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.long+'</b> '+msg.lat+'</div>' )
-	  client_cur = {lat: float(msg.lat), lng: float(msg.long)};
-	}
+	  client_cur = {lat: msg.lat, lng: msg.long};
+	  initMap()
+	//}
       })
     </script>
     <div id="map"></div>
@@ -67,7 +69,7 @@
           center: {lat: 40.7128, lng: -74.0060},
           zoom: 13
         });
-	console.log("!!!!"+client_cur)
+	console.log("!!!!"+client_cur.lat)
 	var marker = new google.maps.Marker({position: client_cur, map: map,
             icon: {
                 url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
