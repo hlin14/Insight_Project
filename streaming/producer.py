@@ -5,18 +5,23 @@ import lazyreader
 import time
 
 def get_s3_and_produce():
+	count = 0
 	producer = KafkaProducer(bootstrap_servers='localhost:9092', value_serializer=lambda x: dumps(x).encode('utf-8'))
+	s3 = boto3.client('s3')
+	obj = s3.get_object(Bucket="han-ping-insight-bucket", Key="nyc_taxi_raw_data/STREAMING_FILE/MTA-Bus-Time-2014-08-01.csv")
 	while True:
-		s3 = boto3.client('s3')
-		obj = s3.get_object(Bucket="han-ping-insight-bucket", Key="nyc_taxi_raw_data/STREAMING_FILE/MTA-Bus-Time-2014-08-01.csv")
+		#s3 = boto3.client('s3')
+		#obj = s3.get_object(Bucket="han-ping-insight-bucket", Key="nyc_taxi_raw_data/STREAMING_FILE/MTA-Bus-Time-2014-08-01.csv")
 		for line in lazyreader.lazyread(obj['Body'], delimiter='\n'):
 			#print line
+			print count 
+			count += 1
 			message = line.strip()
 			message = message.split(",")
-			print message
+			#print message
 			#need to filter out the col 
 			produce(message, producer)
-			time.sleep(0.01)
+			#time.sleep(0.00005)
 
 def produce(msg, producer):
 

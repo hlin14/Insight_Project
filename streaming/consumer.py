@@ -17,7 +17,7 @@ def start_consumer():
 	for msg in consumer:
 
 		msg = ast.literal_eval(msg.value)
-		print msg
+		#print msg
 		#connect to db, and save to db
 
 
