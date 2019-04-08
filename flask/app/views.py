@@ -7,7 +7,7 @@ from flask_googlemaps import Map
 import os
 
 from flask_socketio import SocketIO
-
+import threading
 app = Flask(__name__)
 socketio = SocketIO(app)
 
@@ -44,7 +44,7 @@ def index():
 
 def messageReceived(methods=['GET', 'POST']):
 	print 'message was received!'
-
+'''
 @socketio.on('my event')
 def handle_my_custom_event(json, methods=['GET', 'POST']):
 	print 'received my event: ' + str(json)
@@ -61,8 +61,41 @@ def handle_my_custom_event(json, methods=['GET', 'POST']):
 
 
 	socketio.emit('my response', json, callback=messageReceived)
+'''
 
+'''
+q = []
+@socketio.on('my event')
+def set_interval(json, methods=['GET', 'POST']):
+        if  "" != json.get('message', ""):
+		q.append(json)
+                t = threading.Thread(target=func)
+                t.start()
+        else:
 
+                func()
+
+'''
+
+@socketio.on('my event')
+def func(json, methods=['GET', 'POST']):
+	while True:
+#		json = q[-1]
+		print 'received my event: ' + str(json)
+		#print json['message']
+
+		global cursor
+		cursor.execute("SELECT * FROM bus_testing WHERE bus_id = %s ORDER BY date_time DESC LIMIT 1;",[float(json['message'])])
+		records = cursor.fetchall()
+
+		json_sent = {
+			"long": float(records[0][3]),
+			"lat": float(records[0][4])
+		}
+
+		print json_sent
+		socketio.emit('my response', json_sent)
+		socketio.sleep(0.8)
 if __name__ == '__main__':
 
 	socketio.run(app, host='0.0.0.0', debug = True)
