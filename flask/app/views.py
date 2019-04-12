@@ -26,26 +26,28 @@ def connect_to_cassandra():
 @socketio.on('my event')
 def catch_event(json, methods=['GET', 'POST']):
 	print json
-	id_list = [str(json['message'])]  
+	while int(json['message'])>0:
+		#print json
+		id_list = [str(json['message'])]  
 
-        rows = session.execute(query_prepare, id_list)
-	
-	max_id = 0
-	ret_lat = 0
-	ret_long = 0
-	
-        for row in rows:
-		if row[0] > max_id:
-			max_id = row[0]
-			ret_lat = row[1]
-			ret_long = row[2]
-                print row
-	print ret_lat
-	print ret_long
-	json_sent = {"long": float(ret_long),"lat": float(ret_lat)}
-	print json_sent
-	socketio.emit('my response', json_sent)
-	socketio.sleep(0.8)
+		rows = session.execute(query_prepare, id_list)
+		
+		max_id = 0
+		ret_lat = 0
+		ret_long = 0
+		
+		for row in rows:
+			if row[0] > max_id:
+				max_id = row[0]
+				ret_lat = row[1]
+				ret_long = row[2]
+			print row
+		print ret_lat
+		print ret_long
+		json_sent = {"long": float(ret_long),"lat": float(ret_lat)}
+		print json_sent
+		socketio.emit('my response', json_sent)
+		socketio.sleep(1)
 
 
 def connect_to_db():
