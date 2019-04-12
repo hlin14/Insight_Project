@@ -14,14 +14,18 @@ from cassandra.cluster import Cluster
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-@socketio.on('my event')
-def connect_to_cassandra(json, methods=['GET', 'POST']):
-	print json
+def connect_to_cassandra():
         cluster = Cluster(["127.0.0.1"],port=9042)
         session = cluster.connect('test2')
 
-	query_prepare = session.prepare('SELECT transaction_id, latitude,longitude FROM buspre7 WHERE vehicle_id=?  ALLOW FILTERING;')
+        query_prepare = session.prepare('SELECT transaction_id, latitude,longitude FROM buspre7 WHERE vehicle_id=?  ALLOW FILTERING;')
+	global query_prepare, session
 
+
+
+@socketio.on('my event')
+def catch_event(json, methods=['GET', 'POST']):
+	print json
 	id_list = [str(json['message'])]  
 
         rows = session.execute(query_prepare, id_list)
@@ -62,7 +66,7 @@ def connect_to_db():
 @app.route('/index',methods=['GET', 'POST'])
 def index():
 #	connect_to_db()
-#	connect_to_cassandra()
+	connect_to_cassandra()
 #	client1 = {
 #		"id":1,
 #		"cur_long":float(records[0][3]),
