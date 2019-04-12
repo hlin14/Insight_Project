@@ -8,8 +8,40 @@ import os
 
 from flask_socketio import SocketIO
 import threading
+
+from cassandra.cluster import Cluster
+
 app = Flask(__name__)
 socketio = SocketIO(app)
+
+@socketio.on('my event')
+def connect_to_cassandra(json, methods=['GET', 'POST']):
+	print json
+        cluster = Cluster(["127.0.0.1"],port=9042)
+        session = cluster.connect('test2')
+
+	query_prepare = session.prepare('SELECT transaction_id, latitude,longitude FROM buspre7 WHERE vehicle_id=?  ALLOW FILTERING;')
+
+	id_list = [str(json['message'])]  
+
+        rows = session.execute(query_prepare, id_list)
+	
+	max_id = 0
+	ret_lat = 0
+	ret_long = 0
+	
+        for row in rows:
+		if row[0] > max_id:
+			max_id = row[0]
+			ret_lat = row[1]
+			ret_long = row[2]
+                print row
+	print ret_lat
+	print ret_long
+	json_sent = {"long": float(ret_long),"lat": float(ret_lat)}
+	print json_sent
+	socketio.emit('my response', json_sent)
+	socketio.sleep(0.8)
 
 
 def connect_to_db():
@@ -29,8 +61,8 @@ def connect_to_db():
 @app.route('/',methods=['GET', 'POST'])
 @app.route('/index',methods=['GET', 'POST'])
 def index():
-	connect_to_db()
-
+#	connect_to_db()
+#	connect_to_cassandra()
 #	client1 = {
 #		"id":1,
 #		"cur_long":float(records[0][3]),
@@ -77,7 +109,7 @@ def set_interval(json, methods=['GET', 'POST']):
 
 '''
 
-@socketio.on('my event')
+#@socketio.on('my event')
 def func(json, methods=['GET', 'POST']):
 	while True:
 #		json = q[-1]
