@@ -24,7 +24,7 @@ public class core {
     public static void main(String[] args) {
         Properties config = new Properties();
 
-        config.put(StreamsConfig.APPLICATION_ID_CONFIG, "bank-balance-application");
+        config.put(StreamsConfig.APPLICATION_ID_CONFIG, "insight-bus-application");
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
@@ -42,16 +42,26 @@ public class core {
 
         KStreamBuilder builder = new KStreamBuilder();
 
-        KStream<String, JsonNode> bankTransactions =
-                builder.stream(Serdes.String(), jsonSerde, "bank-transactions");
+        KStream<String, JsonNode> busStream =
+                builder.stream(Serdes.String(), jsonSerde, "bus-stream-topic");
 
+	//change key
+	KStream<String, JsonNode> busStreamChangeKey = busStream
+		.selectKey((key, transaction)-> transaction.get("busID").asText());
+
+	//peek
+//	KStream<String, JsonNode> unchangeStream = busStreamChangeKey
+//	.peek((key, transaction)->System.out.println(key+","+transaction));
+
+	//write to bus-table-topic
+	busStreamChangeKey.to(Serdes.String(), jsonSerde, "bus-table-topic");
 
         // create the initial json object for balances
-        ObjectNode initialBalance = JsonNodeFactory.instance.objectNode();
-        initialBalance.put("count", 0);
-        initialBalance.put("balance", 0);
-        initialBalance.put("time", Instant.ofEpochMilli(0L).toString());
-
+//        ObjectNode initialBalance = JsonNodeFactory.instance.objectNode();
+//        initialBalance.put("count", 0);
+//        initialBalance.put("balance", 0);
+//       initialBalance.put("time", Instant.ofEpochMilli(0L).toString());
+/*
         KTable<String, JsonNode> bankBalance = bankTransactions
                 .groupByKey(Serdes.String(), jsonSerde)
                 .aggregate(
@@ -62,7 +72,7 @@ public class core {
                 );
 
         bankBalance.to(Serdes.String(), jsonSerde,"bank-balance-exactly-once");
-
+*/
         KafkaStreams streams = new KafkaStreams(builder, config);
         streams.cleanUp();
         streams.start();
