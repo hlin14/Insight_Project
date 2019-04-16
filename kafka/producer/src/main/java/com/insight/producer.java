@@ -12,6 +12,9 @@ import java.time.Instant;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.UUID;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class producer {
     public static void main(String[] args) {
@@ -31,11 +34,67 @@ public class producer {
         int i = 0;
         while (true) {
             System.out.println("Producing batch: " + i);
+            //init HaspMap
+            HashMap<Integer, LocalDateTime> durTMap= new HashMap<Integer, LocalDateTime>();
+            HashMap<Integer, Double> durDMap= new HashMap<Integer, Double>();
+
+
+
+
             try {
-                producer.send(newTransaction(40.668602, -73.986697, 469, 4135.347107, 1, "IN_PROGRESS", "MTA NYCT_B63", 2.631838042, "MTA_305423"));
+                Double latitude = 40.668602;
+                Double longtitude = -73.986697;
+                String timeReceived = "2014/8/1 4:00";
+                Integer busID = 469;
+                Double distanceAlong = 4135.347107;
+                Integer directionID = 1;
+                String phase = "IN_PROGRESS";
+                String routeID = "MTA NYCT_B63";
+                Double nextStopDistance = 2.631838042;
+                String nextStopID = "MTA_305423";
+
+                //tranform time to localdatetime
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/M/d H:mm");
+                LocalDateTime formatDateTime = LocalDateTime.parse(timeReceived, formatter);
+
+                //init duration time(sec) and distance(meter)
+                Integer durT = 0;
+                Double durD = 0;
+
+                if (phase.equals("IN_PROGRESS")){
+                    //update duration time
+                    if (!durTMap.containsKey(busID)) {
+                        durTMap.put(busID, formatDateTime);
+                    }
+                    else {
+                        lastLormatDateTime=durTMap.get(busID);
+                        Duration duration = Duration.between(lastLormatDateTime, formatDateTime);
+                        Long durSec = duration.getSeconds();
+                        //make sure the time is correct
+                        if (durSec > 0) {
+                            durT = durSec;
+                        }
+                    }
+
+                    //update duration distance
+                    if (!durDMap.containsKey(busID)) {
+                        durDMap.put(busID, distanceAlong);
+                    }
+                    else {
+                        lastDistanceAlong = durDMap.get(busID);
+                        durDis = distanceAlong - lastDistanceAlong;
+                        //make sure duration distance is correct
+                        if (durDis) > 0 {
+                            durD = durDis;
+                        }
+                    }
+
+                }
+
+                producer.send(newTransaction(latitude, longtitude, busID, distanceAlong, directionID, phase, routeID, nextStopDistance, nextStopID, durT, durD));
                 Thread.sleep(100);
-                producer.send(newTransaction(40.713702, -73.97967, 3928, 3974.805808, 0, "LAYOVER_DURING", "MTA NYCT_M22", 129.3308986, "MTA_903025"));
-                Thread.sleep(100);
+                //producer.send(newTransaction(40.713702, -73.97967, 3928, 3974.805808, 0, "LAYOVER_DURING", "MTA NYCT_M22", 129.3308986, "MTA_903025"));
+                //Thread.sleep(100);
                 i += 1;
             } catch (InterruptedException e) {
                 break;
@@ -44,18 +103,18 @@ public class producer {
         producer.close();
     }
 
-    public static ProducerRecord<String, String> newTransaction(Double latitude, Double longtitude, Integer busID, Double distanceAlong, Integer directionID, String phase, String routeID, Double nextStopDistance, String nextStopID) {
+    public static ProducerRecord<String, String> newTransaction(Double latitude, Double longtitude, LocalDateTime formatDateTime, Integer busID, Double distanceAlong, Integer directionID, String phase, String routeID, Double nextStopDistance, String nextStopID, Integer durT, Double durD) {
         // creates an empty json {}
         ObjectNode transaction = JsonNodeFactory.instance.objectNode();
 
-	UUID uuid = UUID.randomUUID();
-	String uniqueID = uuid.toString();
+        UUID uuid = UUID.randomUUID();
+        String uniqueID = uuid.toString();test
         // Instant.now() is to get the current time using Java 8
-        Instant now = Instant.now();
+        //Instant now = Instant.now();
 
         transaction.put("latitude", latitude);
         transaction.put("longtitude", longtitude);
-        transaction.put("time", now.toString());
+        transaction.put("timeReceived", formatDateTime);
         transaction.put("busID", busID);
         transaction.put("distanceAlong", distanceAlong);
         transaction.put("directionID", directionID);
@@ -63,6 +122,9 @@ public class producer {
         transaction.put("routeID", routeID);
         transaction.put("nextStopDistance", nextStopDistance);
         transaction.put("nextStopID", nextStopID);
+        transaction.put("durT", durT);
+        transaction.put("durD", durD);
+
         return new ProducerRecord<>("bus-stream-topic", uniqueID, transaction.toString());
     }
 }
