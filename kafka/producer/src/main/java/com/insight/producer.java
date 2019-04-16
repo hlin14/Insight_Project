@@ -16,6 +16,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import java.util.HashMap;
+
 public class producer {
     public static void main(String[] args) {
         Properties properties = new Properties();
@@ -58,8 +60,8 @@ public class producer {
                 LocalDateTime formatDateTime = LocalDateTime.parse(timeReceived, formatter);
 
                 //init duration time(sec) and distance(meter)
-                Integer durT = 0;
-                Double durD = 0;
+                Long durT = 0L;
+                Double durD = 0.0;
 
                 if (phase.equals("IN_PROGRESS")){
                     //update duration time
@@ -67,8 +69,8 @@ public class producer {
                         durTMap.put(busID, formatDateTime);
                     }
                     else {
-                        lastLormatDateTime=durTMap.get(busID);
-                        Duration duration = Duration.between(lastLormatDateTime, formatDateTime);
+                        LocalDateTime lastFormatDateTime=durTMap.get(busID);
+                        Duration duration = Duration.between(lastFormatDateTime, formatDateTime);
                         Long durSec = duration.getSeconds();
                         //make sure the time is correct
                         if (durSec > 0) {
@@ -81,17 +83,17 @@ public class producer {
                         durDMap.put(busID, distanceAlong);
                     }
                     else {
-                        lastDistanceAlong = durDMap.get(busID);
-                        durDis = distanceAlong - lastDistanceAlong;
+                        Double lastDistanceAlong = durDMap.get(busID);
+                        Double durDis = distanceAlong - lastDistanceAlong;
                         //make sure duration distance is correct
-                        if (durDis) > 0 {
+                        if (durDis > 0) {
                             durD = durDis;
                         }
                     }
 
                 }
 
-                producer.send(newTransaction(latitude, longtitude, busID, distanceAlong, directionID, phase, routeID, nextStopDistance, nextStopID, durT, durD));
+                producer.send(newTransaction(latitude, longtitude, formatDateTime, busID, distanceAlong, directionID, phase, routeID, nextStopDistance, nextStopID, durT, durD));
                 Thread.sleep(100);
                 //producer.send(newTransaction(40.713702, -73.97967, 3928, 3974.805808, 0, "LAYOVER_DURING", "MTA NYCT_M22", 129.3308986, "MTA_903025"));
                 //Thread.sleep(100);
@@ -103,18 +105,18 @@ public class producer {
         producer.close();
     }
 
-    public static ProducerRecord<String, String> newTransaction(Double latitude, Double longtitude, LocalDateTime formatDateTime, Integer busID, Double distanceAlong, Integer directionID, String phase, String routeID, Double nextStopDistance, String nextStopID, Integer durT, Double durD) {
+    public static ProducerRecord<String, String> newTransaction(Double latitude, Double longtitude, LocalDateTime formatDateTime, Integer busID, Double distanceAlong, Integer directionID, String phase, String routeID, Double nextStopDistance, String nextStopID, Long durT, Double durD) {
         // creates an empty json {}
         ObjectNode transaction = JsonNodeFactory.instance.objectNode();
 
         UUID uuid = UUID.randomUUID();
-        String uniqueID = uuid.toString();test
+        String uniqueID = uuid.toString();
         // Instant.now() is to get the current time using Java 8
         //Instant now = Instant.now();
 
         transaction.put("latitude", latitude);
         transaction.put("longtitude", longtitude);
-        transaction.put("timeReceived", formatDateTime);
+        transaction.put("timeReceived", formatDateTime.toString());
         transaction.put("busID", busID);
         transaction.put("distanceAlong", distanceAlong);
         transaction.put("directionID", directionID);

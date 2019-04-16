@@ -53,8 +53,19 @@ public class core {
 //	KStream<String, JsonNode> unchangeStream = busStreamChangeKey
 //	.peek((key, transaction)->System.out.println(key+","+transaction));
 
+
+	//stream to do map value of dur_distance, dur_time, ave_speed
+
 	//write to bus-table-topic
 	busStreamChangeKey.to(Serdes.String(), jsonSerde, "bus-table-topic");
+
+
+	//read by Ktable
+
+	//send to final topic
+
+
+
 
         // create the initial json object for balances
 //        ObjectNode initialBalance = JsonNodeFactory.instance.objectNode();
