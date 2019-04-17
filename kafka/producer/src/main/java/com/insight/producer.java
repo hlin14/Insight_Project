@@ -37,10 +37,12 @@ public class producer {
         properties.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
 
         Producer<String, String> producer = new KafkaProducer<>(properties);
+        int batchNum = 0;
 
         while (true) {
             int i = 0;
-            System.out.println("Producing batch: " + i);
+            System.out.println("Producing batch: " + batchNum);
+            batchNum += 1;
             //init HaspMap
             HashMap<Integer, LocalDateTime> durTMap= new HashMap<Integer, LocalDateTime>();
             HashMap<Integer, Double> durDMap= new HashMap<Integer, Double>();
@@ -74,54 +76,11 @@ public class producer {
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/M/d H:mm");
                             LocalDateTime formatDateTime = LocalDateTime.parse(timeReceived, formatter);
 
-                            //init duration time(sec) and distance(meter)
-                            Long durT = 0L;
-                            Double durD = 0.0;
+                            producer.send(newTransaction(latitude, longtitude, formatDateTime, busID, distanceAlong, directionID, phase, routeID, nextStopDistance, nextStopID));
 
-                            //make sure the bus's phase is in "IN_PROGRESS"
-                            if (phase.equals("IN_PROGRESS")){
-                                //update duration time
-                                if (!durTMap.containsKey(busID)) {
-                                    durTMap.put(busID, formatDateTime);
-                                }
-                                else {
-                                    LocalDateTime lastFormatDateTime=durTMap.get(busID);
-                                    Duration duration = Duration.between(lastFormatDateTime, formatDateTime);
-                                    Long durSec = duration.getSeconds();
-                                    Long temp = 0L;
-                                    int compare =  durSec.compareTo(temp);
-                                    //make sure the time is correct
-                                    if (compare > 0) {
-                                        durT = durSec;
-                                    }
-                                    //if not correct, update the map
-                                    else {
-                                        durTMap.put(busID, formatDateTime);
-                                    }
-                                }
 
-                                //update duration distance
-                                if (!durDMap.containsKey(busID)) {
-                                    durDMap.put(busID, distanceAlong);
-                                }
-                                else {
-                                    Double lastDistanceAlong = durDMap.get(busID);
-                                    Double durDis = distanceAlong - lastDistanceAlong;
-                                    //make sure duration distance is correct
-                                    if (durDis > 0.0) {
-                                        durD = durDis;
-                                    }
-                                    //if not correct, update the map
-                                    else {
-                                        durDMap.put(busID, distanceAlong);
-                                    }
-                                }
-
-                            }
-
-                            producer.send(newTransaction(latitude, longtitude, formatDateTime, busID, distanceAlong, directionID, phase, routeID, nextStopDistance, nextStopID, durT, durD));
                             Thread.sleep(100);
-                            producer.close();
+                            //producer.close();
                             //producer.send(newTransaction(40.713702, -73.97967, 3928, 3974.805808, 0, "LAYOVER_DURING", "MTA NYCT_M22", 129.3308986, "MTA_903025"));
                             //Thread.sleep(100);
                             //i += 1;
@@ -144,10 +103,12 @@ public class producer {
                     }
                 }
             }
+        //producer.close();
         }
+    //producer.close();
     }
 
-    public static ProducerRecord<String, String> newTransaction(Double latitude, Double longtitude, LocalDateTime formatDateTime, Integer busID, Double distanceAlong, Integer directionID, String phase, String routeID, Double nextStopDistance, String nextStopID, Long durT, Double durD) {
+    public static ProducerRecord<String, String> newTransaction(Double latitude, Double longtitude, LocalDateTime formatDateTime, Integer busID, Double distanceAlong, Integer directionID, String phase, String routeID, Double nextStopDistance, String nextStopID) {
         // creates an empty json {}
         ObjectNode transaction = JsonNodeFactory.instance.objectNode();
 
@@ -166,8 +127,6 @@ public class producer {
         transaction.put("routeID", routeID);
         transaction.put("nextStopDistance", nextStopDistance);
         transaction.put("nextStopID", nextStopID);
-        transaction.put("durT", durT);
-        transaction.put("durD", durD);
 
         return new ProducerRecord<>("bus-stream-topic", uniqueID, transaction.toString());
     }
