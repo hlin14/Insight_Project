@@ -61,8 +61,9 @@ public class core {
 
 
 	//read by Ktable
-
+        KTable<String, JsonNode> finalTable = builder.table("bus-table-topic");
 	//send to final topic
+        finalTable.to(Serdes.String(), jsonSerde, "bus-final-topic");
 
 
 
