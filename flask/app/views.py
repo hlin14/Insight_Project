@@ -28,27 +28,17 @@ def catch_event(json, methods=['GET', 'POST']):
 	print json
 	while True:
 		#print json
-		id_list = [str(json['message'])]  
-
+		
+		json_sent = []
 		rows = session.execute(query_prepare)
 		for row in rows:
-			print row[0], row[1], row[2]
+			json_sent.append({"busID":row[0], "long":float(row[2]), "lat":float(row[1])})
+			#print row[0], row[1], row[2]
 		
-		max_id = 0
-		ret_lat = 0
-		ret_long = 0
-		
-		for row in rows:
-			if row[0] > max_id:
-				max_id = row[0]
-				ret_lat = row[1]
-				ret_long = row[2]
-			print row
-		print ret_lat
-		print ret_long
-		json_sent = {"long": float(ret_long),"lat": float(ret_lat)}
+		#json_sent = {"long": float(ret_long),"lat": float(ret_lat)}
+		#json_sent = [{"busID":123, "long":123, "lat":456},{"busID":456, "long":123, "lat":456}]
 		print json_sent
-		#socketio.emit('my response', json_sent)
+		socketio.emit('my response', json_sent)
 		socketio.sleep(1)
 
 

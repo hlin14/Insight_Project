@@ -48,14 +48,15 @@
         } )
       } )
       socket.on( 'my response', function( msg ) {
-      console.log(msg.lat)
-      console.log(msg.long)
+      console.log(msg);
+      makeCluster(msg);
+      //console.log(msg.long)
 //        if( typeof msg.lat !== 'undefined' ) {
  //         $( 'h3' ).remove()
  //         $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.long+'</b> '+msg.lat+'</div>' )
-	  client_cur = {lat: msg.lat, lng: msg.long};
-	  clearMarkers()
-          addMarker(client_cur)
+//	  client_cur = {lat: msg.lat, lng: msg.long};
+//	  clearMarkers()
+//          addMarker(client_cur)
 //	}
       })
     </script>
@@ -76,32 +77,20 @@
             //    url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
            // }});
 
-      var locations = [
-        {lat: -31.563910, lng: 147.154312},
-        {lat: -33.718234, lng: 150.363181},
-        {lat: -33.727111, lng: 150.371124},
-        {lat: -33.848588, lng: 151.209834},
-        {lat: -33.851702, lng: 151.216968}]
 
-        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        var markers = locations.map(function(location, i) {
+
+
+      }
+      function makeCluster(msg) {
+        var labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var markers = msg.map(function(msg, i) {
           return new google.maps.Marker({
-            position: location,
-            label: labels[i % labels.length]
+            position: {lat:msg.lat, lng:msg.long},
+            label: msg.busID
           });
         });
-
         var markerCluster = new MarkerClusterer(map, markers,
-            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-
-      var locations = [
-        {lat: -31.563910, lng: 147.154312},
-        {lat: -33.718234, lng: 150.363181},
-        {lat: -33.727111, lng: 150.371124},
-        {lat: -33.848588, lng: 151.209834},
-        {lat: -33.851702, lng: 151.216968}]
-
-
+            {imagePath: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m"});
       }
       function addMarker(client_cur) {
        var marker = new google.maps.Marker({position: client_cur, map: map,
