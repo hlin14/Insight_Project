@@ -64,7 +64,7 @@ public class producer {
                             Double latitude = Double.valueOf(transaction[0]);
                             Double longtitude = Double.valueOf(transaction[1]);
                             String timeReceived = transaction[2];
-                            Integer busID = Integer.parseInt(transaction[3]);
+                            String busID = transaction[3];
                             Double distanceAlong = Double.valueOf(transaction[4]);
                             Integer directionID = Integer.parseInt(transaction[5]);
                             String phase = transaction[6];
@@ -108,7 +108,7 @@ public class producer {
     //producer.close();
     }
 
-    public static ProducerRecord<String, String> newTransaction(Double latitude, Double longtitude, LocalDateTime formatDateTime, Integer busID, Double distanceAlong, Integer directionID, String phase, String routeID, Double nextStopDistance, String nextStopID) {
+    public static ProducerRecord<String, String> newTransaction(Double latitude, Double longtitude, LocalDateTime formatDateTime, String busID, Double distanceAlong, Integer directionID, String phase, String routeID, Double nextStopDistance, String nextStopID) {
         // creates an empty json {}
         ObjectNode transaction = JsonNodeFactory.instance.objectNode();
 
