@@ -18,7 +18,7 @@ def connect_to_cassandra():
         cluster = Cluster(["127.0.0.1"],port=9042)
         session = cluster.connect('test2')
 
-        query_prepare = session.prepare('SELECT transaction_id, latitude,longitude FROM buspre7 WHERE vehicle_id=?  ALLOW FILTERING;')
+        query_prepare = session.prepare('SELECT * FROM bustable;')
 	global query_prepare, session
 
 
@@ -26,11 +26,13 @@ def connect_to_cassandra():
 @socketio.on('my event')
 def catch_event(json, methods=['GET', 'POST']):
 	print json
-	while int(json['message'])>0:
+	while True:
 		#print json
 		id_list = [str(json['message'])]  
 
-		rows = session.execute(query_prepare, id_list)
+		rows = session.execute(query_prepare)
+		for row in rows:
+			print row[0], row[1], row[2]
 		
 		max_id = 0
 		ret_lat = 0
@@ -46,7 +48,7 @@ def catch_event(json, methods=['GET', 'POST']):
 		print ret_long
 		json_sent = {"long": float(ret_long),"lat": float(ret_lat)}
 		print json_sent
-		socketio.emit('my response', json_sent)
+		#socketio.emit('my response', json_sent)
 		socketio.sleep(1)
 
 
