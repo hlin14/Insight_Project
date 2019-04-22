@@ -39,7 +39,7 @@ def catch_event(json, methods=['GET', 'POST']):
 		#json_sent = [{"busID":123, "long":123, "lat":456},{"busID":456, "long":123, "lat":456}]
 		print json_sent
 		socketio.emit('my response', json_sent)
-		socketio.sleep(1)
+		socketio.sleep(10)
 
 
 def connect_to_db():

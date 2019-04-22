@@ -13,21 +13,24 @@ def start_consumer():
 	#for row in rows:
 	#	print row
 
-	consumer = KafkaConsumer("bus-final-topic", auto_offset_reset ='earliest')
+	consumer = KafkaConsumer("busfinaltopic")
 	for msg in consumer:
 		if msg.value != "":
 			print msg.value
-			transaction = json.loads(msg.value)
-			session.execute("update bustable set latitude=%s, longitude=%s, nextstopdistance=%s, nextstopid=%s, phase=%s, routeid=%s, timereceived=%s where busid=%s", (
-			str(transaction["latitude"]),
-			str(transaction["longtitude"]),
-			str(transaction["nextStopDistance"]),
-			transaction["nextStopID"],
-			transaction["phase"],
-			transaction["routeID"],
-			transaction["timeReceived"],
-			transaction["busID"]
-			))
+			try: 
+				transaction = json.loads(msg.value)
+				session.execute("update bustable set latitude=%s, longitude=%s, nextstopdistance=%s, nextstopid=%s, phase=%s, routeid=%s, timereceived=%s where busid=%s", (
+				str(transaction["latitude"]),
+				str(transaction["longtitude"]),
+				str(transaction["nextStopDistance"]),
+				transaction["nextStopID"],
+				transaction["phase"],
+				transaction["routeID"],
+				transaction["timeReceived"],
+				transaction["busID"]
+				))
+			except ValueError as error:
+				print("invalid json: %s" % error)
 			#print transaction["busID"]
 			#print type(msg.value)
 			#msg = ast.literal_eval(msg.value)

@@ -1,4 +1,0 @@
-{"transaction_id": "1", "latitude":"40.668602", "longitude":"-73.986697", "time_received":"2014/8/1 4:00", "vehicle_id":"469", "inferred_route_id":"MTA NYCT_B63"}
-{"transaction_id": "2", "latitude":"40.713702", "longitude":"-73.97967", "time_received":"2014/8/1 4:00", "vehicle_id":"3928", "inferred_route_id":"MTA NYCT_M22"}
-{"transaction_id": "3", "latitude":"40.713702", "longitude":"-73.97967", "time_received":"2014/8/1 4:00", "vehicle_id":"3928", "inferred_route_id":"MTA NYCT_M22"}
-{"transaction_id": "4", "latitude":"40.713702", "longitude":"-73.97967", "time_received":"2014/8/1 4:00", "vehicle_id":"3928", "inferred_route_id":"MTA NYCT_M22"}

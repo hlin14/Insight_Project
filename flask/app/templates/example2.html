@@ -49,6 +49,7 @@
       } )
       socket.on( 'my response', function( msg ) {
       console.log(msg);
+      clearMarkers();
       makeCluster(msg);
       //console.log(msg.long)
 //        if( typeof msg.lat !== 'undefined' ) {
@@ -82,15 +83,16 @@
 
       }
       function makeCluster(msg) {
-        var labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        var markers = msg.map(function(msg, i) {
+        markers = msg.map(function(msg, i) {
           return new google.maps.Marker({
             position: {lat:msg.lat, lng:msg.long},
             label: msg.busID
           });
         });
+        //clearMarkers();
         var markerCluster = new MarkerClusterer(map, markers,
             {imagePath: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m"});
+        clearMarkers();
       }
       function addMarker(client_cur) {
        var marker = new google.maps.Marker({position: client_cur, map: map,
@@ -101,12 +103,15 @@
         markers.push(marker);
       } 
       function setMapOnAll(map) {
+        console.log(markers.length)
         for (var i = 0; i < markers.length; i++) {
           markers[i].setMap(map);
         }
+       console.log("clear!!!")
       }
       function clearMarkers() {
         setMapOnAll(null);
+        markers = [];
       }
     </script>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">

@@ -47,7 +47,7 @@ public class producer {
             HashMap<Integer, LocalDateTime> durTMap= new HashMap<Integer, LocalDateTime>();
             HashMap<Integer, Double> durDMap= new HashMap<Integer, Double>();
 
-            String csvFile = "MTA-Bus-Time-2014-08-01_small_csv.csv";
+            String csvFile = "MTA-Bus-Time-2014-08-01.csv";
             BufferedReader br = null;
             String line = "";
             String cvsSplitBy = ",";
@@ -55,10 +55,10 @@ public class producer {
             try {
                 br = new BufferedReader(new FileReader(csvFile));
                 while ((line = br.readLine()) != null) {
-
+                    System.out.println(line);
                     String[] transaction = line.split(cvsSplitBy);
 
-                    if (i > 0) {
+                    if (i > 0 && !line.contains("NULL") ) {
                         try {
                             //get data from the columns
                             Double latitude = Double.valueOf(transaction[0]);
@@ -79,7 +79,7 @@ public class producer {
                             producer.send(newTransaction(latitude, longtitude, formatDateTime, busID, distanceAlong, directionID, phase, routeID, nextStopDistance, nextStopID));
 
 
-                            Thread.sleep(100);
+                            Thread.sleep(5);
                             //producer.close();
                             //producer.send(newTransaction(40.713702, -73.97967, 3928, 3974.805808, 0, "LAYOVER_DURING", "MTA NYCT_M22", 129.3308986, "MTA_903025"));
                             //Thread.sleep(100);

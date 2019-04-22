@@ -26,7 +26,7 @@ public class core {
 
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, "insight-bus-application");
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+//        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         // we disable the cache to demonstrate all the "steps" involved in the transformation - not recommended in prod
         config.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0");
@@ -61,9 +61,9 @@ public class core {
 
 
 	//read by Ktable
-        KTable<String, JsonNode> finalTable = builder.table("bus-table-topic");
+        KTable<String, JsonNode> finalTable = builder.table(Serdes.String(), jsonSerde,"bus-table-topic");
 	//send to final topic
-        finalTable.to(Serdes.String(), jsonSerde, "bus-final-topic");
+       finalTable.to(Serdes.String(), jsonSerde, "busfinaltopic");
 
 
 
