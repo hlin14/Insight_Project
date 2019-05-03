@@ -3,9 +3,12 @@
 Making a real-time tracking system using Confluent Kafka on NYC bus dataset. 
 
 ## Demo:
-
+Video:https://www.youtube.com/watch?v=InkbHj9vZDw
+![alt text](https://github.com/hlin14/Insight_Project/blob/master/figures/demo_screen.png)
 ## Tech Stack: 
 Kafka, Cassandra, Flask
+![alt text](https://github.com/hlin14/Insight_Project/blob/master/figures/tech_stack.png)
+
 
 ## Data Source:
 NYC bus trip data, including bus ID, time received, location, route ID, next stop distance(in meters), next stop ID.
