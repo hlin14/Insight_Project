@@ -1,13 +1,19 @@
 # Insight_Project
 ## Project Idea:
-Making a real-time tracking system using Confluent Kafka on NYC bus dataset. 
+The motivation is to run a bus company in New York. In order to view all the current geolocations of the buses, I made a real-time geolocation tracking system using Confluent Kafka, Cassandra, Flask with Google Map API.
+
+## Project Slides:
+http://bit.ly/BusMap_slides
 
 ## Demo:
-Video:https://www.youtube.com/watch?v=InkbHj9vZDw
+Video:http://bit.ly/BusMap_Demo
 ![alt text](https://github.com/hlin14/Insight_Project/blob/master/figures/demo_screen.png)
+Description: The browser will update current location of the buses every second, the red marker represents the location, the numebr represents the bus_id. The red markers will automatically group into clusters to be more clear on the map. The color of the cluster represent the degree of density: red cluster means it contains more than 100 buses, yellow cluster means it contains more than 10 but less than 100 buses, blue cluster means it contains less than 10 buses. The detail can be shown by clicking the cluster or clicking the zoom-in button.
+
 ## Tech Stack: 
-Kafka, Cassandra, Flask
+Kafka, Cassandra, Flask, AWS
 ![alt text](https://github.com/hlin14/Insight_Project/blob/master/figures/tech_stack.png)
+I used a java program to be the producer of my Kafka cluster, and then I used Kafka Streams API to the transformation of the data, and used Ktable to be the final result in the topics. I choose Cassandra as my storeage because of its hight throughput. Then I use Flask with Google Map API to be my front-end.
 
 
 ## Data Source:
