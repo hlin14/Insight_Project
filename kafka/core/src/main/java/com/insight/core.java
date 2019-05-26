@@ -26,10 +26,7 @@ public class core {
 
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, "insight-bus-application");
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-//        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-
         config.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0");
-
         config.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
 
         // json Serde
@@ -37,34 +34,21 @@ public class core {
         final Deserializer<JsonNode> jsonDeserializer = new JsonDeserializer();
         final Serde<JsonNode> jsonSerde = Serdes.serdeFrom(jsonSerializer, jsonDeserializer);
 
-
         KStreamBuilder builder = new KStreamBuilder();
 
-        KStream<String, JsonNode> busStream =
-                builder.stream(Serdes.String(), jsonSerde, "bus-stream-topic");
+        KStream<String, JsonNode> busStream =builder.stream(Serdes.String(), jsonSerde, "bus-stream-topic");
 
-	//change key
-	KStream<String, JsonNode> busStreamChangeKey = busStream
-		.selectKey((key, transaction)-> transaction.get("busID").asText());
+	    // change key
+        KStream<String, JsonNode> busStreamChangeKey = busStream.selectKey((key, transaction)-> transaction.get("busID").asText());
 
-	//peek
-//	KStream<String, JsonNode> unchangeStream = busStreamChangeKey
-//	.peek((key, transaction)->System.out.println(key+","+transaction));
+	    // write to bus-table-topic
+        busStreamChangeKey.to(Serdes.String(), jsonSerde, "bus-table-topic");
 
-
-	//stream to do map value of dur_distance, dur_time, ave_speed
-
-	//write to bus-table-topic
-	busStreamChangeKey.to(Serdes.String(), jsonSerde, "bus-table-topic");
-
-
-	//read by Ktable
+	    // read by Ktable
         KTable<String, JsonNode> finalTable = builder.table(Serdes.String(), jsonSerde,"bus-table-topic");
-	//send to final topic
-       finalTable.to(Serdes.String(), jsonSerde, "busfinaltopic");
 
-
-
+	    // send to final topic
+        finalTable.to(Serdes.String(), jsonSerde, "busfinaltopic");
 
         KafkaStreams streams = new KafkaStreams(builder, config);
         streams.cleanUp();

@@ -78,12 +78,8 @@ public class producer {
 
                             producer.send(newTransaction(latitude, longtitude, formatDateTime, busID, distanceAlong, directionID, phase, routeID, nextStopDistance, nextStopID));
 
-
                             Thread.sleep(5);
-                            //producer.close();
-                            //producer.send(newTransaction(40.713702, -73.97967, 3928, 3974.805808, 0, "LAYOVER_DURING", "MTA NYCT_M22", 129.3308986, "MTA_903025"));
-                            //Thread.sleep(100);
-                            //i += 1;
+
                         } catch (InterruptedException e) {
                             break;
                         }
@@ -103,9 +99,7 @@ public class producer {
                     }
                 }
             }
-        //producer.close();
         }
-    //producer.close();
     }
 
     public static ProducerRecord<String, String> newTransaction(Double latitude, Double longtitude, LocalDateTime formatDateTime, String busID, Double distanceAlong, Integer directionID, String phase, String routeID, Double nextStopDistance, String nextStopID) {
@@ -114,9 +108,6 @@ public class producer {
 
         UUID uuid = UUID.randomUUID();
         String uniqueID = uuid.toString();
-        // Instant.now() is to get the current time using Java 8
-        //Instant now = Instant.now();
-
         transaction.put("latitude", latitude);
         transaction.put("longtitude", longtitude);
         transaction.put("timeReceived", formatDateTime.toString());

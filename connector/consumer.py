@@ -8,11 +8,6 @@ def start_consumer():
 	cluster = Cluster()
 	session = cluster.connect("test2")
 
-	#rows = session.execute('select * from kafka_connect_offsets;')
-	#session.execute("update forcas10222 set name='john', age='6' where id='1'")
-	#for row in rows:
-	#	print row
-
 	consumer = KafkaConsumer("busfinaltopic")
 	for msg in consumer:
 		if msg.value != "":
@@ -31,10 +26,6 @@ def start_consumer():
 				))
 			except ValueError as error:
 				print("invalid json: %s" % error)
-			#print transaction["busID"]
-			#print type(msg.value)
-			#msg = ast.literal_eval(msg.value)
-			#print msg[0]
 
 if __name__ == '__main__':
 	start_consumer()
